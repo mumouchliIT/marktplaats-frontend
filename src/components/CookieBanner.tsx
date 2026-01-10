@@ -16,7 +16,7 @@ export default function CookieBanner() {
         left: 16,
         right: 16,
         bottom: 16,
-        background: "white",
+        background: "grey",
         border: "1px solid #ddd",
         borderRadius: 10,
         padding: 14,
