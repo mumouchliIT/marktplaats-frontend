@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useConsent } from "./ConsentProvider";
 
 export default function CookieBanner() {

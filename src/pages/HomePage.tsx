@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../services/api";
+import { track } from "../services/analytics";
 
 type Listing = {
   id?: number;
@@ -20,6 +21,7 @@ const HomePage = () => {
   const [location, setLocation] = useState("");
 
   async function load() {
+    track("listings_load_clicked");
     setError("");
     try {
       const res = await api.get<Listing[]>("/listings");
@@ -41,6 +43,7 @@ const HomePage = () => {
 
   async function create() {
     setError("");
+    track("listing_created", { category, location });
     try {
       const payload = {
         title,
