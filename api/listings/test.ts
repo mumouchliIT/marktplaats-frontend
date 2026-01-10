@@ -3,12 +3,15 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 const BACKEND_URL =
   "http://listing-service-env.eba-rtff238k.eu-north-1.elasticbeanstalk.com";
 
-export default async function handler(_req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    const response = await fetch(`${BACKEND_URL}/listings/test`);
-    const data = await response.text();
-    res.status(response.status).send(data);
-  } catch {
-    res.status(500).json({ error: "Proxy error" });
+    const url = `${BACKEND_URL}/listings/test`;
+    const r = await fetch(url);
+    const text = await r.text();
+
+    res.status(r.status);
+    return res.send(text);
+  } catch (e: any) {
+    return res.status(500).json({ error: "Proxy error", detail: e?.message });
   }
 }
