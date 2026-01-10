@@ -1,31 +1,27 @@
-export default async function handler(req: Request) {
-  const BACKEND_URL =
-    "http://listing-service-env.eba-rtff238k.eu-north-1.elasticbeanstalk.com";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 
+const BACKEND_URL = "http://listing-service-env.eba-rtff238k.eu-north-1.elasticbeanstalk.com";
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    const response = await fetch(`${BACKEND_URL}/listings`, {
+    const path = Array.isArray(req.query.path) ? req.query.path.join("/") : "";
+    const url = `${BACKEND_URL}/${path}`;
+
+    const upstream = await fetch(url, {
       method: req.method,
       headers: {
         "Content-Type": "application/json",
+        "Accept": "application/json",
       },
-      body:
-        req.method === "GET" || req.method === "HEAD"
-          ? undefined
-          : await req.text(),
+      body: req.method === "GET" || req.method === "HEAD" ? undefined : JSON.stringify(req.body),
     });
 
-    const data = await response.text();
+    const text = await upstream.text();
 
-    return new Response(data, {
-      status: response.status,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  } catch {
-    return new Response(
-      JSON.stringify({ error: "Proxy error" }),
-      { status: 500 }
-    );
+    res.status(upstream.status);
+    res.setHeader("Content-Type", upstream.headers.get("content-type") ?? "application/json");
+    return res.send(text);
+  } catch (e) {
+    return res.status(500).json({ error: "Proxy error" });
   }
 }
