@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
 import { track } from "../services/analytics";
@@ -9,6 +10,12 @@ type Listing = {
   category: string;
   location: string;
 };
+
+function getErrorMessage(e: unknown, fallback: string) {
+  if (e instanceof Error && e.message) return e.message;
+  if (typeof e === "string" && e) return e;
+  return fallback;
+}
 
 const HomePage = () => {
   const [testMsg, setTestMsg] = useState<string>("");
@@ -31,8 +38,8 @@ const HomePage = () => {
         ? payload
         : payload?.listings ?? [];
       setListings(nextListings);
-    } catch (e: any) {
-      setError(e?.message || "Failed to load listings");
+    } catch (e: unknown) {
+      setError(getErrorMessage(e, "Failed to load listings"));
     }
   }
 
@@ -41,8 +48,8 @@ const HomePage = () => {
     try {
       const res = await api.get<string>("/listings/test");
       setTestMsg(res.data);
-    } catch (e: any) {
-      setError(e?.message || "Test failed");
+    } catch (e: unknown) {
+      setError(getErrorMessage(e, "Test failed"));
     }
   }
 
@@ -65,8 +72,8 @@ const HomePage = () => {
       setLocation("");
 
       await load();
-    } catch (e: any) {
-      setError(e?.message || "Create failed");
+    } catch (e: unknown) {
+      setError(getErrorMessage(e, "Create failed"));
     }
   }
 
@@ -76,8 +83,8 @@ const HomePage = () => {
     try {
       await api.delete(`/listings/${id}`);
       await load();
-    } catch (e: any) {
-      setError(e?.message || "Delete failed");
+    } catch (e: unknown) {
+      setError(getErrorMessage(e, "Delete failed"));
     }
   }
 

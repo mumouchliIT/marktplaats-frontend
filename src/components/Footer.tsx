@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useConsent } from "./ConsentProvider";
+import { useConsent } from "./useConsent";
 
 type Props = {
   onShowPrivacy: () => void;

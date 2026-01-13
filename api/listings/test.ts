@@ -11,7 +11,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     res.status(r.status);
     return res.send(text);
-  } catch (e: any) {
-    return res.status(500).json({ error: "Proxy error", detail: e?.message });
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Unknown error";
+    return res.status(500).json({ error: "Proxy error", detail: message });
   }
 }

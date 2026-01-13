@@ -24,10 +24,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const text = await r.text();
     return res.status(r.status).send(text);
-  } catch (e: any) {
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Unknown error";
     return res.status(500).json({
       error: "Proxy error",
-      message: e?.message,
+      message,
       backend: url,
     });
   }
