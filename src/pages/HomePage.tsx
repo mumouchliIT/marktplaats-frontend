@@ -24,8 +24,13 @@ const HomePage = () => {
     track("listings_load_clicked");
     setError("");
     try {
-      const res = await api.get<Listing[]>("/listings");
-      setListings(res.data);
+      const res = await api.get("/listings");
+      const payload =
+        typeof res.data === "string" ? JSON.parse(res.data) : res.data;
+      const nextListings = Array.isArray(payload)
+        ? payload
+        : payload?.listings ?? [];
+      setListings(nextListings);
     } catch (e: any) {
       setError(e?.message || "Failed to load listings");
     }
